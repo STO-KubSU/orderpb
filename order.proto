@@ -4,16 +4,58 @@ package order;
 
 option go_package = "github.com/STO-KubSU/order-service";
 
-service OrderService {
-  rpc GetOrder (GetOrderRequest) returns (GetOrderResponse);
+import "google/protobuf/timestamp.proto";
+
+// Определяем сообщение для информации о пользователе
+message User {
+  string id = 1;
+  optional string name = 2;
+  optional string email = 3;
 }
 
+// Определяем сообщение для информации о товаре
+message Product {
+  string id = 1;
+  optional string name = 2;
+  int32 quantity = 3;
+  float price = 4;
+}
+
+// Определяем сообщение для информации о заказе
+message Order {
+  string id = 1;
+  User user = 2;
+  repeated Product products = 3;
+  optional float total_price = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+// Запрос для получения заказа по ID
 message GetOrderRequest {
   string id = 1;
 }
 
+// Ответ для запроса получения заказа
 message GetOrderResponse {
-  string id = 1;
-  string user_id = 2;
-  string item = 3;
+  Order order = 1;
+}
+
+// Запрос для создания нового заказа
+message CreateOrderRequest {
+  User user = 1;
+  repeated Product products = 2;
+}
+
+// Ответ для создания нового заказа
+message CreateOrderResponse {
+  Order order = 1;
+}
+
+// Определяем сервис для работы с заказами
+service OrderService {
+  // Метод для получения заказа по ID
+  rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
+  
+  // Метод для создания нового заказа
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
 }
